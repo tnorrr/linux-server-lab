@@ -122,7 +122,7 @@ This is a public repository. Real internal IP addresses, the actual SSH port in 
 
 ## Key Incident: GRUB Bootloader Lockout
 
-Worth calling out directly rather than burying it: implementing a GRUB boot password went wrong due to a hash typo, locking the server out entirely after a power loss. Recovered via a live-USB LVM chroot repair, then deliberately removed the control afterward rather than re-fixing it, given the availability risk it posed for an unattended server. Full writeup with every step in **[HARDENING.md](./HARDENING.md#incident-grub-bootloader-password-lockout)**.
+Implementing a GRUB boot password went wrong due to a hash typo, locking the server out entirely after a power loss. Recovered via a live-USB LVM chroot repair, then deliberately removed the control afterward rather than re-fixing it, given the availability risk it posed for an unattended server. Full writeup with every step in **[HARDENING.md](./HARDENING.md#incident-grub-bootloader-password-lockout)**.
 
 ---
 
