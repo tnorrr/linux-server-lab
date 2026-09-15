@@ -1,0 +1,26 @@
+# Environment files with real secrets — never commit these
+docker/.env
+*.env
+!.env.example
+
+# Certificates and keys
+*.key
+*.crt
+*.pem
+
+# Runtime data volumes if ever created alongside the compose file locally
+docker/portainer_data/
+docker/uptime-kuma/
+docker/vaultwarden/
+docker/jellyfin/
+docker/npm/
+docker/pihole/
+docker/homepage/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor junk
+.vscode/
+*.swp

@@ -1,0 +1,101 @@
+version: "3.8"
+
+# Full homelab stack. Copy .env.example to .env and fill in your own values
+# before running `docker compose up -d`.
+#
+# Port mappings match what's documented in HARDENING.md. Change them here
+# and in security/ufw-baseline.sh together if you deviate from these.
+
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    extra_hosts:
+      # Required so Kuma can reliably reach the host's own LAN IP for
+      # monitors targeting other services on this same machine.
+      # See HARDENING.md for why this is necessary.
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./uptime-kuma:/app/data
+
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - WEBSOCKET_ENABLED=true
+    volumes:
+      - ./vaultwarden:/data
+
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    ports:
+      - "8096:8096"
+    devices:
+      # Requires Intel Quick Sync or equivalent hardware transcoding support.
+      # Remove this block entirely if your CPU doesn't have it.
+      - /dev/dri:/dev/dri
+    volumes:
+      - ./jellyfin/config:/config
+      - ./jellyfin/cache:/cache
+      - ${MEDIA_PATH}:/media
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - "8181:81"
+      - "8443:443"
+    volumes:
+      - ./npm/data:/data
+      - ./npm/letsencrypt:/etc/letsencrypt
+
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    restart: unless-stopped
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8090:80"
+    environment:
+      - TZ=${TZ}
+      - WEBPASSWORD=${PIHOLE_WEBPASSWORD}
+    volumes:
+      - ./pihole/etc-pihole:/etc/pihole
+      - ./pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Update this to match whatever host/IP you actually access it from.
+      - HOMEPAGE_ALLOWED_HOSTS=${HOMEPAGE_ALLOWED_HOSTS}
+    volumes:
+      - ./homepage/config:/app/config
+
+volumes:
+  portainer_data:

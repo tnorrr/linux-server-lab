@@ -1,0 +1,9 @@
+# /etc/audit/rules.d/audit.rules
+#
+# Watches writes and attribute changes on sensitive system files.
+# Load with: sudo augenrules --load && sudo systemctl restart auditd
+
+-w /etc/passwd -p wa -k passwd_changes
+-w /etc/shadow -p wa -k shadow_changes
+-w /etc/ssh/sshd_config -p wa -k sshd_config_changes
+-w /var/log/auth.log -p wa -k auth_log_changes
