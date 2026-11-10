@@ -96,7 +96,7 @@ linux-server-lab/
 This isn't meant to be blindly run against a production box; it documents one specific machine. That said, the pieces are reusable:
 
 ```bash
-git clone https://github.com/yourusername/linux-server-lab.git
+git clone https://github.com/tnorrr/linux-server-lab.git
 cd linux-server-lab
 
 # Review and copy the environment template
